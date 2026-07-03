@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
+import java.util.UUID;
 
 import com.fit.iuh.user_service.model.base.BaseEntity;
 
@@ -19,7 +20,8 @@ import com.fit.iuh.user_service.model.base.BaseEntity;
 public class Role extends BaseEntity {
 
     @Id
-    Long id;
+    @Column(nullable = false, unique = true)
+    String id;
 
     @Column(unique = true, nullable = false)
     String name;
@@ -34,5 +36,11 @@ public class Role extends BaseEntity {
     )
     Set<Permission> permissions;
 
+    @PrePersist
+    void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = UUID.randomUUID().toString();
+        }
+    }
 }
 

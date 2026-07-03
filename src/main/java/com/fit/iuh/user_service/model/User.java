@@ -31,10 +31,8 @@ import lombok.experimental.FieldDefaults;
 public class User extends BaseEntity {
 
     @Id
-    Long id;
-
-    @Column(name = "keycloak_id", unique = true, nullable = false)
-    String keycloakId;
+    @Column(nullable = false, unique = true)
+    String id;
 
     @Column(nullable = false, unique = true)
     String email;

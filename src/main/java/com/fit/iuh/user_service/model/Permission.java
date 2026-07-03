@@ -1,10 +1,13 @@
 package com.fit.iuh.user_service.model;
 
+import java.util.UUID;
+
 import com.fit.iuh.user_service.model.base.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,10 +23,18 @@ import lombok.experimental.FieldDefaults;
 public class Permission extends BaseEntity {
 
     @Id
-    Long id;
+    @Column(nullable = false, unique = true)
+    String id;
 
     @Column(unique = true, nullable = false)
     String name;
 
     String description;
+
+    @PrePersist
+    void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = UUID.randomUUID().toString();
+        }
+    }
 }
