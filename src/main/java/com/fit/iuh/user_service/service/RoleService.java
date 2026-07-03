@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fit.iuh.user_service.dto.request.role.UpsertRoleRequest;
-import com.fit.iuh.user_service.dto.response.role.RoleResponse;
+import com.fit.iuh.user_service.dto.request.UpsertRoleRequest;
+import com.fit.iuh.user_service.dto.response.RoleResponse;
 
 public interface RoleService {
     void createRole(UpsertRoleRequest upsertRoleRequest);

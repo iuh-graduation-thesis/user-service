@@ -1,4 +1,4 @@
-package com.fit.iuh.user_service.dto.request.role;
+package com.fit.iuh.user_service.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

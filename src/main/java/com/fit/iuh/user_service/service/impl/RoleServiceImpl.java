@@ -6,8 +6,8 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.fit.iuh.user_service.dto.request.role.UpsertRoleRequest;
-import com.fit.iuh.user_service.dto.response.role.RoleResponse;
+import com.fit.iuh.user_service.dto.request.UpsertRoleRequest;
+import com.fit.iuh.user_service.dto.response.RoleResponse;
 import com.fit.iuh.user_service.service.RoleService;
 
 public class RoleServiceImpl implements RoleService {

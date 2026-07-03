@@ -1,4 +1,4 @@
-package com.fit.iuh.user_service.dto.response.permission;
+package com.fit.iuh.user_service.dto.response;
 
 import lombok.Builder;
 
