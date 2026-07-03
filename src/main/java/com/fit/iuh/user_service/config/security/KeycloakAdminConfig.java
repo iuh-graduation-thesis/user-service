@@ -17,7 +17,8 @@ public class KeycloakAdminConfig {
             @Value("${keycloak.admin.realm}") String adminRealm,
             @Value("${keycloak.admin.client-id}") String adminClientId,
             @Value("${keycloak.admin.user-name}") String username,
-            @Value("${keycloak.admin.password}") String password) {
+            @Value("${keycloak.admin.password}") String password
+    ) {
         return KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm(adminRealm)
@@ -29,7 +30,8 @@ public class KeycloakAdminConfig {
     }
 
     @Bean
-    RealmResource keycloakRealm(Keycloak keycloakAdminClient,
+    RealmResource keycloakRealm(
+            Keycloak keycloakAdminClient,
             @Value("${keycloak.current-realm}") String currentRealm) {
         return keycloakAdminClient.realm(currentRealm);
     }
