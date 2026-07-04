@@ -25,10 +25,8 @@ public class UserController {
     UserService userService;
 
     @PutMapping("/me/onboarding")
-    public ApiResponse<Void> onboarding(
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestBody @Valid OnboardingRequest request) {
-        userService.processOnboarding(jwt.getSubject(), request);
+    public ApiResponse<Void> onboarding(@RequestBody @Valid OnboardingRequest request) {
+        userService.processOnboarding(request);
 
         return ApiResponse.<Void>builder()
                 .message("Onboarding completed")

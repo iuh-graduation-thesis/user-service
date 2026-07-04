@@ -1,50 +1,116 @@
 package com.fit.iuh.user_service.service.impl;
 
-import java.util.List;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 import org.jspecify.annotations.NonNull;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.iuh.user_service.dto.request.UpsertRoleRequest;
 import com.fit.iuh.user_service.dto.response.RoleResponse;
+import com.fit.iuh.user_service.model.Permission;
+import com.fit.iuh.user_service.model.Role;
+import com.fit.iuh.user_service.repository.PermissionRepository;
+import com.fit.iuh.user_service.repository.RoleRepository;
 import com.fit.iuh.user_service.service.RoleService;
+import com.fit.iuh.user_service.utils.RoleMapper;
 
+import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
+@Transactional
 public class RoleServiceImpl implements RoleService {
+
+    RoleRepository roleRepository;
+    PermissionRepository permissionRepository;
 
     @Override
     public void createRole(UpsertRoleRequest upsertRoleRequest) {
-        // TODO Auto-generated method stub
-        
+        String name = upsertRoleRequest.name().toUpperCase();
+
+        if (roleRepository.existsByName(name))
+            throw new DataIntegrityViolationException("Tên chức vụ này đã tồn tại");
+
+        Role role = RoleMapper.mapToRole(upsertRoleRequest);
+
+        if (upsertRoleRequest.permissionIdList() != null && !upsertRoleRequest.permissionIdList().isEmpty()) {
+            Set<Permission> permissionList = new HashSet<>(
+                    permissionRepository.findAllById(upsertRoleRequest.permissionIdList()));
+
+            role.setPermissions(permissionList);
+        }
+
+        roleRepository.save(role);
     }
 
-    @Override
-    public void deleteRoleById(String id) {
-        // TODO Auto-generated method stub
-        
-    }
-
+    @Transactional(readOnly = true)
     @Override
     public Page<@NonNull RoleResponse> findAllRoles(Pageable pageable) {
-        // TODO Auto-generated method stub
-        return null;
+        return roleRepository
+                .findAll(pageable)
+                .map(RoleMapper::mapToRoleResponse);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<RoleResponse> findAllRoles() {
-        // TODO Auto-generated method stub
-        return null;
+        return roleRepository
+                .findAll()
+                .stream()
+                .map(RoleMapper::mapToRoleResponse)
+                .toList();
     }
 
     @Override
     public RoleResponse findById(String id) {
-        // TODO Auto-generated method stub
-        return null;
+        return roleRepository
+                .findById(id)
+                .map(RoleMapper::mapToRoleResponse)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chức vụ"));
     }
 
     @Override
     public void updateRole(String id, UpsertRoleRequest upsertRoleRequest) {
-        // TODO Auto-generated method stub
+        Role role = roleRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chức vụ"));
+
+        String name = upsertRoleRequest.name().toUpperCase();
+
+        if (roleRepository.existsByNameAndIdNot(name, role.getId()))
+            throw new DataIntegrityViolationException("Tên chức vụ đã tồn tại");
+
+        RoleMapper.updateRoleFromRequest(role, upsertRoleRequest);
+
+        if (upsertRoleRequest.permissionIdList() != null && !upsertRoleRequest.permissionIdList().isEmpty()) {
+            Set<Permission> permissionList = new HashSet<>(
+                    permissionRepository.findAllById(upsertRoleRequest.permissionIdList()));
+
+            role.setPermissions(permissionList);
+        }
+
+        roleRepository.save(role);
     }
-    
+
+    @Override
+    public void deleteRoleById(String id) {
+        Role role = roleRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chức vụ"));
+
+        roleRepository.delete(role);
+    }
+
 }
