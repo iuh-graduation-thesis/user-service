@@ -35,10 +35,19 @@ public class User extends BaseEntity {
     String id;
 
     @Column(nullable = false, unique = true)
+    String username;
+
+    @Column(nullable = false, unique = true)
     String email;
 
     @Column(length = 50)
-    String fullName;
+    String firstName;
+
+    @Column(length = 50)
+    String lastName;
+
+    @Column(nullable = false)
+    Boolean emailVerified = false;
 
     String avatarUrl;
 
@@ -55,5 +64,5 @@ public class User extends BaseEntity {
     Role role;
 
     @Column(name = "on_boarded", nullable = false)
-    Boolean onBoarded;
+    Boolean onBoarded = false;
 }
