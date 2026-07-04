@@ -16,38 +16,35 @@ public class JpaAuditing {
 
     @Bean
     public AuditorAware<String> auditorAware() {
-        return this::resolveCurrentEmail;
+        return this::resolveCurrentUserId;
     }
 
-    private Optional<String> resolveCurrentEmail() {
+    private Optional<String> resolveCurrentUserId() {
         Optional<String> fromContext = Optional.ofNullable(UserContextHolder.get())
-                .map(UserContextHolder::getEmail)
+                .map(UserContextHolder::getKeycloakId)
                 .filter(this::hasText);
 
         if (fromContext.isPresent()) {
             return fromContext;
         }
 
-        return getAuthenticationEmail();
+        return getAuthenticationUserId();
     }
 
-    private Optional<String> getAuthenticationEmail() {
+    private Optional<String> getAuthenticationUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
 
         Object principal = authentication.getPrincipal();
-        if (principal instanceof String principalEmail && hasText(principalEmail)) {
-            return Optional.of(principalEmail);
+        if (principal instanceof String principalValue && hasText(principalValue)) {
+            return Optional.of(principalValue);
         }
         if (principal instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("email");
-            if (!hasText(email)) {
-                email = jwt.getClaimAsString("preferred_username");
-            }
-            if (hasText(email)) {
-                return Optional.of(email);
+            String subject = jwt.getSubject();
+            if (hasText(subject)) {
+                return Optional.of(subject);
             }
         }
 

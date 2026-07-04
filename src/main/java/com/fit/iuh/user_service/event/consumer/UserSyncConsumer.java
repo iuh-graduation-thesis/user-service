@@ -4,6 +4,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.fit.iuh.user_service.constant.RoleName;
+import com.fit.iuh.user_service.filter.UserContextHolder;
 import com.fit.iuh.user_service.model.Role;
 import com.fit.iuh.user_service.model.User;
 import com.fit.iuh.user_service.repository.RoleRepository;
@@ -39,11 +40,20 @@ public class UserSyncConsumer {
                     String.format("%-6s", action), String.format("%-5s", source),
                     userId, payload.path("email").asText());
 
-            switch (action) {
-                case "CREATE" -> handleCreateUser(payload, userId);
-                case "DELETE" -> handleDeleteUser(userId);
-                case "UPDATE" -> handleUpdateUser(payload, userId);
-                default -> log.warn("Unrecognized action: {}", action);
+            try {
+                UserContextHolder.set(UserContextHolder.builder()
+                        .keycloakId(userId)
+                        .email(payload.path("email").asText(null))
+                        .build());
+
+                switch (action) {
+                    case "CREATE" -> handleCreateUser(payload, userId);
+                    case "DELETE" -> handleDeleteUser(userId);
+                    case "UPDATE" -> handleUpdateUser(payload, userId);
+                    default -> log.warn("Unrecognized action: {}", action);
+                }
+            } finally {
+                UserContextHolder.clear();
             }
 
         } catch (Exception e) {
