@@ -6,10 +6,6 @@ import java.time.LocalDate;
 
 import com.fit.iuh.user_service.model.constant.Gender;
 
-/**
- * Admin 2/4/2026
- *
- **/
 public record OnboardingRequest(
         @NotBlank(message = "Tên không được để trống")
         @Size(min = 2, max = 50, message = "Tên phải từ 2-50 ký tự")

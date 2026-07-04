@@ -4,10 +4,6 @@ import lombok.Builder;
 
 import java.util.Set;
 
-/**
- * Admin 2/18/2026
- *
- **/
 @Builder
 public record RoleResponse(
         String id,

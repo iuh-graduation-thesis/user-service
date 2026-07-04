@@ -2,10 +2,6 @@ package com.fit.iuh.user_service.dto.response;
 
 import lombok.Builder;
 
-/**
- * Admin 2/16/2026
- *
- **/
 @Builder
 public record PermissionResponse(
         String id,
