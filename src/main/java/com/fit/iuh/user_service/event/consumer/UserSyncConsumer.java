@@ -3,7 +3,7 @@ package com.fit.iuh.user_service.event.consumer;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import com.fit.iuh.user_service.constant.RoleName;
+import com.fit.iuh.user_service.constant.RoleConstants;
 import com.fit.iuh.user_service.filter.UserContextHolder;
 import com.fit.iuh.user_service.model.Role;
 import com.fit.iuh.user_service.model.User;
@@ -117,7 +117,7 @@ public class UserSyncConsumer {
 
     private Role resolveDefaultRole() {
         return roleRepository
-                .findByName(RoleName.CUSTOMER)
-                .orElseThrow(() -> new IllegalStateException("Missing default role: " + RoleName.CUSTOMER));
+                .findByName(RoleConstants.CUSTOMER)
+                .orElseThrow(() -> new IllegalStateException("Missing default role: " + RoleConstants.CUSTOMER));
     }
 }

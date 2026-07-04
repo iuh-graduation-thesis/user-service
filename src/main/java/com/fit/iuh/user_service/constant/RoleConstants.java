@@ -1,8 +1,8 @@
 package com.fit.iuh.user_service.constant;
 
-public final class RoleName {
+public final class RoleConstants {
 
-    private RoleName() {
+    private RoleConstants() {
     }
 
     public static final String ADMIN = "ADMIN";

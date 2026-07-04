@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.iuh.user_service.constant.PermissionConstants;
-import com.fit.iuh.user_service.constant.RoleName;
+import com.fit.iuh.user_service.constant.RoleConstants;
 import com.fit.iuh.user_service.model.Permission;
 import com.fit.iuh.user_service.model.Role;
 import com.fit.iuh.user_service.repository.PermissionRepository;
@@ -56,8 +56,8 @@ public class PermissionDataInitializer implements CommandLineRunner {
 
     private void assignAllPermissionsToAdmin(Set<String> permissionNames) {
         Role adminRole = roleRepository
-                .findByName(RoleName.ADMIN)
-                .orElseThrow(() -> new IllegalStateException("Missing default role: " + RoleName.ADMIN));
+                .findByName(RoleConstants.ADMIN)
+                .orElseThrow(() -> new IllegalStateException("Missing default role: " + RoleConstants.ADMIN));
 
         Set<Permission> adminPermissions = permissionRepository
                 .findAll()

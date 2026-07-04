@@ -5,7 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.fit.iuh.user_service.constant.RoleName;
+import com.fit.iuh.user_service.constant.RoleConstants;
 import com.fit.iuh.user_service.model.Role;
 import com.fit.iuh.user_service.repository.RoleRepository;
 
@@ -21,8 +21,8 @@ public class RoleDataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         Map<String, String> roles = Map.of(
-                RoleName.ADMIN, "Quản trị viên hệ thống",
-                RoleName.CUSTOMER, "Người dùng hệ thống");
+                RoleConstants.ADMIN, "Quản trị viên hệ thống",
+                RoleConstants.CUSTOMER, "Người dùng hệ thống");
 
         roles.forEach((name, description) -> {
             if (!roleRepository.existsByName(name)) {
