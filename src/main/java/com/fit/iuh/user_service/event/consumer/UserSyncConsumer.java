@@ -36,7 +36,7 @@ public class UserSyncConsumer {
             String source = payload.path("source").asText("UNKNOWN");
             String userId = payload.path("userId").asText();
 
-            log.info(">>>> [KAFKA-IN] [{}] Source: {} | UserID: {} | Email: {}",
+            log.info("[KAFKA] [{}] Source: {} | UserID: {} | Email: {}",
                     String.format("%-6s", action), String.format("%-5s", source),
                     userId, payload.path("email").asText());
 
