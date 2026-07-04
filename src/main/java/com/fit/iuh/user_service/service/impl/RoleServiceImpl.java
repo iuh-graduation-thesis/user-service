@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.iuh.user_service.dto.request.UpsertRoleRequest;
 import com.fit.iuh.user_service.dto.response.RoleResponse;
+import com.fit.iuh.user_service.mapper.RoleMapper;
 import com.fit.iuh.user_service.model.Permission;
 import com.fit.iuh.user_service.model.Role;
 import com.fit.iuh.user_service.repository.PermissionRepository;
 import com.fit.iuh.user_service.repository.RoleRepository;
 import com.fit.iuh.user_service.service.RoleService;
-import com.fit.iuh.user_service.utils.RoleMapper;
 
 import java.util.List;
 import java.util.HashSet;

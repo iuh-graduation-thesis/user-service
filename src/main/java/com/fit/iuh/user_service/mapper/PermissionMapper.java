@@ -1,4 +1,4 @@
-package com.fit.iuh.user_service.utils;
+package com.fit.iuh.user_service.mapper;
 
 import com.fit.iuh.user_service.dto.request.UpsertPermissionRequest;
 import com.fit.iuh.user_service.dto.response.PermissionResponse;

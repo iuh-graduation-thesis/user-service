@@ -1,4 +1,4 @@
-package com.fit.iuh.user_service.utils;
+package com.fit.iuh.user_service.mapper;
 
 import java.util.stream.Collectors;
 
