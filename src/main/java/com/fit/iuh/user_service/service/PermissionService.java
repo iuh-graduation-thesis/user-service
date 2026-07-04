@@ -1,9 +1,8 @@
 package com.fit.iuh.user_service.service;
 
-import lombok.NonNull;
-
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ public interface PermissionService {
     @Transactional(readOnly = true)
     List<PermissionResponse> findAllPermissions();
 
-    void updatePermission(UpsertPermissionRequest upsertPermissionRequest, String id);
+    void updatePermission(String id, UpsertPermissionRequest upsertPermissionRequest);
 
     void deletePermissionById(String id);
 }

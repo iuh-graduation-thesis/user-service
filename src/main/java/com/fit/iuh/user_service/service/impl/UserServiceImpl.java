@@ -15,7 +15,6 @@ import com.fit.iuh.user_service.model.User;
 import com.fit.iuh.user_service.repository.UserRepository;
 import com.fit.iuh.user_service.service.UserService;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

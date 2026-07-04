@@ -1,5 +1,6 @@
 package com.fit.iuh.user_service.mapper;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import com.fit.iuh.user_service.dto.request.UpsertRoleRequest;
@@ -14,11 +15,12 @@ public class RoleMapper {
                 .id(role.getId().toString())
                 .name(role.getName())
                 .description(role.getDescription())
-                .permissions(role.getPermissions()
-                        .stream()
-                        .map(PermissionMapper::mapToPermissionResponse)
-                        .collect(Collectors.toSet())
-                )
+                .permissions(role.getPermissions() == null
+                        ? Collections.emptySet()
+                        : role.getPermissions()
+                                .stream()
+                                .map(PermissionMapper::mapToPermissionResponse)
+                                .collect(Collectors.toSet()))
                 .build();
     }
 
