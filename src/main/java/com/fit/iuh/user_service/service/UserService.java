@@ -6,7 +6,7 @@ import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
-    void processOnboarding(String userId, OnboardingRequest onboardingRequest);
+    void processOnboarding(OnboardingRequest onboardingRequest);
 
     @Transactional(readOnly = true)
     UserPermissionsResponse getUserPermissions(String keycloakId);

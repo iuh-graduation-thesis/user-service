@@ -10,10 +10,12 @@ import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
+import com.fit.iuh.user_service.filter.UserContextHolder;
 import com.fit.iuh.user_service.model.User;
 import com.fit.iuh.user_service.repository.UserRepository;
 import com.fit.iuh.user_service.service.UserService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,9 +31,10 @@ public class UserServiceImpl implements UserService {
         UserRepository userRepository;
 
         @Override
-        public void processOnboarding(String userId, OnboardingRequest onboardingRequest) {
+        public void processOnboarding(OnboardingRequest onboardingRequest) {
+                String email = UserContextHolder.get().getEmail();
                 User user = userRepository
-                                .findById(userId)
+                                .findByEmail(email)
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
                 user.setFirstName(onboardingRequest.firstName());
