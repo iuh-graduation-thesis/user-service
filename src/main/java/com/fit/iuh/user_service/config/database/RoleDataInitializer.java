@@ -2,6 +2,7 @@ package com.fit.iuh.user_service.config.database;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.fit.iuh.user_service.constant.RoleName;
@@ -11,6 +12,7 @@ import com.fit.iuh.user_service.repository.RoleRepository;
 import java.util.Map;
 
 @Component
+@Order(1)
 @RequiredArgsConstructor
 public class RoleDataInitializer implements CommandLineRunner {
 
@@ -18,14 +20,14 @@ public class RoleDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Map<RoleName, String> roles = Map.of(
+        Map<String, String> roles = Map.of(
                 RoleName.ADMIN, "Quản trị viên hệ thống",
                 RoleName.CUSTOMER, "Người dùng hệ thống");
 
         roles.forEach((name, description) -> {
-            if (!roleRepository.existsByName(name.toString())) {
+            if (!roleRepository.existsByName(name)) {
                 roleRepository.save(Role.builder()
-                        .name(name.toString())
+                        .name(name)
                         .description(description)
                         .build());
             }

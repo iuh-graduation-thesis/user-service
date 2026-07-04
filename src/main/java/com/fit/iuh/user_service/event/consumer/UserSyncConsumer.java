@@ -107,7 +107,7 @@ public class UserSyncConsumer {
 
     private Role resolveDefaultRole() {
         return roleRepository
-                .findByName(RoleName.CUSTOMER.toString())
-                .orElseThrow(() -> new IllegalStateException("Missing default role: " + RoleName.CUSTOMER.toString()));
+                .findByName(RoleName.CUSTOMER)
+                .orElseThrow(() -> new IllegalStateException("Missing default role: " + RoleName.CUSTOMER));
     }
 }
