@@ -1,4 +1,4 @@
-package com.fit.iuh.user_service.controller;
+package com.fit.iuh.user_service.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

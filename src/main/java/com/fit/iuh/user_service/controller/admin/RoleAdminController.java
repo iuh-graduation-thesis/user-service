@@ -1,4 +1,4 @@
-package com.fit.iuh.user_service.controller;
+package com.fit.iuh.user_service.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/admin/roles")
 @PreAuthorize("hasAuthority('ADMIN')")
-public class AdminRoleController {
+public class RoleAdminController {
 
     RoleService roleService;
 
