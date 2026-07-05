@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
+import com.fit.iuh.user_service.dto.request.UpdateAvatarRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.dto.request.UpdateProfileRequest;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
@@ -115,4 +116,10 @@ public class UserServiceImpl implements UserService {
                 log.info("Updated profile for user {}", user.getId());
         }
 
+        @Override
+        public void updateUserAvatar(UpdateAvatarRequest request) {
+                // TODO Auto-generated method stub
+        }
+
+        
 }

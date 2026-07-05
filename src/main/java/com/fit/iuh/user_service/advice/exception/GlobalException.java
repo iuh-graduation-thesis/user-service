@@ -5,6 +5,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
@@ -27,6 +28,13 @@ public class GlobalException {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse<Void>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(buildErrorResponse(errorCode));
+    }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    ResponseEntity<ApiResponse<Void>> handlingNoResourceFoundException(NoResourceFoundException exception) {
+        ErrorCode errorCode = ErrorCode.ROUTE_NOT_FOUND;
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(buildErrorResponse(errorCode));
     }
