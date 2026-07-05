@@ -45,7 +45,13 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             String resolvedFirstName = resolveValue(request.firstName(), userRepresentation.getFirstName());
             String resolvedLastName = resolveValue(request.lastName(), userRepresentation.getLastName());
             Boolean resolvedEnabled = request.enabled() != null ? request.enabled() : userRepresentation.isEnabled();
+            Boolean resolvedEmailVerified = request.emailVerified() != null
+                    ? request.emailVerified()
+                    : userRepresentation.isEmailVerified();
             boolean emailChanged = !Objects.equals(userRepresentation.getEmail(), resolvedEmail);
+            if (emailChanged) {
+                resolvedEmailVerified = false;
+            }
 
             if (!isUserChanged(
                     userRepresentation,
@@ -53,7 +59,8 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
                     resolvedEmail,
                     resolvedFirstName,
                     resolvedLastName,
-                    resolvedEnabled)) {
+                    resolvedEnabled,
+                    resolvedEmailVerified)) {
                 log.info("Keycloak user information is unchanged for user {}", userId);
                 return;
             }
@@ -63,9 +70,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             userRepresentation.setFirstName(resolvedFirstName);
             userRepresentation.setLastName(resolvedLastName);
             userRepresentation.setEnabled(resolvedEnabled);
-            if (emailChanged) {
-                userRepresentation.setEmailVerified(false);
-            }
+            userRepresentation.setEmailVerified(resolvedEmailVerified);
 
             userResource.update(userRepresentation);
             log.info("Requested Keycloak user information update for user {}", userId);
@@ -111,13 +116,15 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             String email,
             String firstName,
             String lastName,
-            Boolean enabled
+            Boolean enabled,
+            Boolean emailVerified
     ) {
         return !Objects.equals(userRepresentation.getUsername(), username)
                 || !Objects.equals(userRepresentation.getEmail(), email)
                 || !Objects.equals(userRepresentation.getFirstName(), firstName)
                 || !Objects.equals(userRepresentation.getLastName(), lastName)
-                || !Objects.equals(userRepresentation.isEnabled(), enabled);
+                || !Objects.equals(userRepresentation.isEnabled(), enabled)
+                || !Objects.equals(userRepresentation.isEmailVerified(), emailVerified);
     }
 
     private String resolveValue(String requestValue, String currentValue) {

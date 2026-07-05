@@ -8,14 +8,16 @@ public record UpdateKeycloakUserRequest(
         String email,
         String firstName,
         String lastName,
-        Boolean enabled
+        Boolean enabled,
+        Boolean emailVerified
 ) {
     public boolean hasAnyValue() {
         return hasText(username)
                 || hasText(email)
                 || hasText(firstName)
                 || hasText(lastName)
-                || enabled != null;
+                || enabled != null
+                || emailVerified != null;
     }
 
     private boolean hasText(String value) {

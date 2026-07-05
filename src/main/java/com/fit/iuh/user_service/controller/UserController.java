@@ -57,4 +57,12 @@ public class UserController {
                 .message("Profile updated successfully")
                 .build();
     }
+
+    @PostMapping("/me/email/verify")
+    public ApiResponse<Void> verifyEmail() {
+        userService.verifyCurrentUserEmail();
+        return ApiResponse.<Void>builder()
+                .message("Email verified successfully")
+                .build();
+    }
 }

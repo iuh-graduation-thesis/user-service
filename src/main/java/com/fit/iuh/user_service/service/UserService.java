@@ -24,4 +24,6 @@ public interface UserService {
     void updateUserAvatar(UpdateAvatarRequest request);
 
     void updateUserStatus(String userId, boolean enabled);
+
+    void verifyCurrentUserEmail();
 }

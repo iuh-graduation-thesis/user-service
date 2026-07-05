@@ -143,6 +143,19 @@ public class UserServiceImpl implements UserService {
                 log.info("Requested user {} status update to enabled={}", userId, enabled);
         }
 
+        @Override
+        public void verifyCurrentUserEmail() {
+                String userId = currentUserUtils.getCurrentUserId();
+
+                keycloakUserService.updateUserIfChanged(
+                                userId,
+                                UpdateKeycloakUserRequest.builder()
+                                                .emailVerified(true)
+                                                .build());
+
+                log.info("Requested email verification for user {}", userId);
+        }
+
         private void validateUniqueAccountFields(User user, UpdateProfileRequest request) {
                 if (hasText(request.username())
                                 && !request.username().equals(user.getUsername())
