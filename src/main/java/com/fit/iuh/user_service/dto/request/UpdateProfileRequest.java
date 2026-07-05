@@ -4,11 +4,20 @@ import java.time.LocalDate;
 
 import com.fit.iuh.user_service.model.constant.Gender;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UpdateProfileRequest(
+        @Size(min = 3, max = 50, message = "Tên đăng nhập phải từ 3-50 ký tự")
+        @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "Tên đăng nhập chỉ được chứa chữ, số, dấu chấm, gạch dưới hoặc gạch ngang")
+        String username,
+
+        @Email(message = "Email không hợp lệ")
+        @Size(max = 100, message = "Email tối đa 100 ký tự")
+        String email,
+
         @Size(min = 2, max = 50, message = "Tên phải từ 2-50 ký tự")
         String firstName,
 

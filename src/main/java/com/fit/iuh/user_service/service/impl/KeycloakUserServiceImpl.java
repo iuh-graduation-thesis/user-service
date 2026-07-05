@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.config.security.KeycloakPasswordGrantClientFactory;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
+import com.fit.iuh.user_service.dto.request.UpdateKeycloakUserRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.service.KeycloakUserService;
 
@@ -30,8 +31,8 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
     KeycloakPasswordGrantClientFactory keycloakPasswordGrantClientFactory;
 
     @Override
-    public void updateNameIfChanged(String userId, String firstName, String lastName) {
-        if (!hasText(firstName) && !hasText(lastName)) {
+    public void updateUserIfChanged(String userId, UpdateKeycloakUserRequest request) {
+        if (request == null || !request.hasAnyValue()) {
             return;
         }
 
@@ -39,19 +40,27 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             var userResource = keycloakRealm.users().get(userId);
             UserRepresentation userRepresentation = userResource.toRepresentation();
 
-            String resolvedFirstName = hasText(firstName) ? firstName : userRepresentation.getFirstName();
-            String resolvedLastName = hasText(lastName) ? lastName : userRepresentation.getLastName();
+            String resolvedUsername = resolveValue(request.username(), userRepresentation.getUsername());
+            String resolvedEmail = resolveValue(request.email(), userRepresentation.getEmail());
+            String resolvedFirstName = resolveValue(request.firstName(), userRepresentation.getFirstName());
+            String resolvedLastName = resolveValue(request.lastName(), userRepresentation.getLastName());
+            boolean emailChanged = !Objects.equals(userRepresentation.getEmail(), resolvedEmail);
 
-            if (!isNameChanged(userRepresentation, resolvedFirstName, resolvedLastName)) {
-                log.info("Keycloak name is unchanged for user {}", userId);
+            if (!isUserChanged(userRepresentation, resolvedUsername, resolvedEmail, resolvedFirstName, resolvedLastName)) {
+                log.info("Keycloak user information is unchanged for user {}", userId);
                 return;
             }
 
+            userRepresentation.setUsername(resolvedUsername);
+            userRepresentation.setEmail(resolvedEmail);
             userRepresentation.setFirstName(resolvedFirstName);
             userRepresentation.setLastName(resolvedLastName);
+            if (emailChanged) {
+                userRepresentation.setEmailVerified(false);
+            }
 
             userResource.update(userRepresentation);
-            log.info("Requested Keycloak name update for user {}", userId);
+            log.info("Requested Keycloak user information update for user {}", userId);
         } catch (WebApplicationException exception) {
             log.error("Failed to update Keycloak user {}: {}", userId, exception.getMessage());
             throw new AppException(ErrorCode.KEYCLOAK_USER_UPDATE_FAILED);
@@ -88,9 +97,21 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         }
     }
 
-    private boolean isNameChanged(UserRepresentation userRepresentation, String firstName, String lastName) {
-        return !Objects.equals(userRepresentation.getFirstName(), firstName)
+    private boolean isUserChanged(
+            UserRepresentation userRepresentation,
+            String username,
+            String email,
+            String firstName,
+            String lastName
+    ) {
+        return !Objects.equals(userRepresentation.getUsername(), username)
+                || !Objects.equals(userRepresentation.getEmail(), email)
+                || !Objects.equals(userRepresentation.getFirstName(), firstName)
                 || !Objects.equals(userRepresentation.getLastName(), lastName);
+    }
+
+    private String resolveValue(String requestValue, String currentValue) {
+        return hasText(requestValue) ? requestValue : currentValue;
     }
 
     private boolean hasText(String value) {

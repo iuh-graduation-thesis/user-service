@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
+import com.fit.iuh.user_service.dto.request.UpdateKeycloakUserRequest;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.request.UpdateAvatarRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
@@ -45,10 +46,12 @@ public class UserServiceImpl implements UserService {
                         throw new AppException(ErrorCode.USER_ALREADY_ONBOARDED);
                 }
 
-                keycloakUserService.updateNameIfChanged(
+                keycloakUserService.updateUserIfChanged(
                                 user.getId(),
-                                onboardingRequest.firstName(),
-                                onboardingRequest.lastName());
+                                UpdateKeycloakUserRequest.builder()
+                                                .firstName(onboardingRequest.firstName())
+                                                .lastName(onboardingRequest.lastName())
+                                                .build());
 
                 user.setPhone(onboardingRequest.phone());
                 user.setDob(onboardingRequest.dob());
@@ -96,11 +99,16 @@ public class UserServiceImpl implements UserService {
         @Override
         public void updateUserProfile(UpdateProfileRequest request) {
                 User user = currentUserUtils.getCurrentUser();
+                validateUniqueAccountFields(user, request);
 
-                keycloakUserService.updateNameIfChanged(
+                keycloakUserService.updateUserIfChanged(
                                 user.getId(),
-                                request.firstName(),
-                                request.lastName());
+                                UpdateKeycloakUserRequest.builder()
+                                                .username(request.username())
+                                                .email(request.email())
+                                                .firstName(request.firstName())
+                                                .lastName(request.lastName())
+                                                .build());
 
                 if (request.phone() != null) {
                         user.setPhone(request.phone());
@@ -114,6 +122,24 @@ public class UserServiceImpl implements UserService {
 
                 userRepository.save(user);
                 log.info("Updated profile for user {}", user.getId());
+        }
+
+        private void validateUniqueAccountFields(User user, UpdateProfileRequest request) {
+                if (hasText(request.username())
+                                && !request.username().equals(user.getUsername())
+                                && userRepository.existsByUsernameAndIdNot(request.username(), user.getId())) {
+                        throw new AppException(ErrorCode.USERNAME_EXISTED);
+                }
+
+                if (hasText(request.email())
+                                && !request.email().equals(user.getEmail())
+                                && userRepository.existsByEmailAndIdNot(request.email(), user.getId())) {
+                        throw new AppException(ErrorCode.EMAIL_EXISTED);
+                }
+        }
+
+        private boolean hasText(String value) {
+                return value != null && !value.isBlank();
         }
 
         @Override
