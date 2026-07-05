@@ -21,10 +21,10 @@ public class UserInternalController {
     
     UserService userService;
 
-    @GetMapping("/{keycloakId}/permissions")
-    public ApiResponse<UserPermissionsResponse> getUserPermissions(@PathVariable String keycloakId) {
+    @GetMapping("/{userId}/permissions")
+    public ApiResponse<UserPermissionsResponse> getUserPermissions(@PathVariable String userId) {
         return ApiResponse.<UserPermissionsResponse>builder()
-                .result(userService.getUserPermissions(keycloakId))
+                .result(userService.getUserPermissions(userId))
                 .build();
     }
 }

@@ -26,13 +26,13 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
     RealmResource keycloakRealm;
 
     @Override
-    public void updateNameIfChanged(String keycloakId, OnboardingRequest onboardingRequest) {
+    public void updateNameIfChanged(String userId, OnboardingRequest onboardingRequest) {
         try {
-            var userResource = keycloakRealm.users().get(keycloakId);
+            var userResource = keycloakRealm.users().get(userId);
             UserRepresentation userRepresentation = userResource.toRepresentation();
 
             if (!isNameChanged(userRepresentation, onboardingRequest)) {
-                log.info("Keycloak name is unchanged for user {}", keycloakId);
+                log.info("Keycloak name is unchanged for user {}", userId);
                 return;
             }
 
@@ -40,9 +40,9 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             userRepresentation.setLastName(onboardingRequest.lastName());
 
             userResource.update(userRepresentation);
-            log.info("Requested Keycloak name update for user {}", keycloakId);
+            log.info("Requested Keycloak name update for user {}", userId);
         } catch (WebApplicationException exception) {
-            log.error("Failed to update Keycloak user {}: {}", keycloakId, exception.getMessage());
+            log.error("Failed to update Keycloak user {}: {}", userId, exception.getMessage());
             throw new AppException(ErrorCode.KEYCLOAK_USER_UPDATE_FAILED);
         }
     }

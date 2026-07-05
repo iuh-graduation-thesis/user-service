@@ -42,7 +42,7 @@ public class UserSyncConsumer {
 
             try {
                 UserContextHolder.set(UserContextHolder.builder()
-                        .keycloakId(userId)
+                        .userId(userId)
                         .email(payload.path("email").asText(null))
                         .build());
 
@@ -61,16 +61,16 @@ public class UserSyncConsumer {
         }
     }
 
-    private void handleCreateUser(JsonNode payload, String keycloakId) {
+    private void handleCreateUser(JsonNode payload, String userId) {
         try {
-            if (userRepository.existsById(keycloakId)) {
-                log.warn("User {} already exists. Skipping.", keycloakId);
+            if (userRepository.existsById(userId)) {
+                log.warn("User {} already exists. Skipping.", userId);
                 return;
             }
 
             User newUser = new User();
-            newUser.setId(keycloakId);
-            newUser.setUsername(payload.path("username").asText(keycloakId));
+            newUser.setId(userId);
+            newUser.setUsername(payload.path("username").asText(userId));
             newUser.setEmail(payload.path("email").asText(null));
             newUser.setFirstName(payload.path("firstName").asText(null));
             newUser.setLastName(payload.path("lastName").asText(null));
@@ -86,8 +86,8 @@ public class UserSyncConsumer {
         }
     }
 
-    private void handleUpdateUser(JsonNode payload, String keycloakId) {
-        userRepository.findById(keycloakId).ifPresentOrElse(user -> {
+    private void handleUpdateUser(JsonNode payload, String userId) {
+        userRepository.findById(userId).ifPresentOrElse(user -> {
             if (payload.has("username")) user.setUsername(payload.path("username").asText(null));
             if (payload.has("email")) user.setEmail(payload.path("email").asText(null));
             if (payload.has("firstName")) user.setFirstName(payload.path("firstName").asText(null));
@@ -101,18 +101,18 @@ public class UserSyncConsumer {
             }
 
             userRepository.save(user);
-            log.info("Successfully updated user {} from Kafka event.", keycloakId);
-        }, () -> log.warn("User {} not found. Skipping update.", keycloakId));
+            log.info("Successfully updated user {} from Kafka event.", userId);
+        }, () -> log.warn("User {} not found. Skipping update.", userId));
     }
 
-    private void handleDeleteUser(String keycloakId) {
-        if (!userRepository.existsById(keycloakId)) {
-            log.warn("User {} not found. Skipping delete.", keycloakId);
+    private void handleDeleteUser(String userId) {
+        if (!userRepository.existsById(userId)) {
+            log.warn("User {} not found. Skipping delete.", userId);
             return;
         }
 
-        userRepository.deleteById(keycloakId);
-        log.info("Successfully deleted user {} from DB.", keycloakId);
+        userRepository.deleteById(userId);
+        log.info("Successfully deleted user {} from DB.", userId);
     }
 
     private Role resolveDefaultRole() {

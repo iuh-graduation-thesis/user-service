@@ -4,5 +4,5 @@ import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 
 public interface KeycloakUserService {
 
-    void updateNameIfChanged(String keycloakId, OnboardingRequest onboardingRequest);
+    void updateNameIfChanged(String userId, OnboardingRequest onboardingRequest);
 }

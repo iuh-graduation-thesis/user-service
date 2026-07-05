@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class UserContextHolder {
 
     String email;
-    String keycloakId;
+    String userId;
 
     /**
      * Vùng lưu tạm theo thread hiện tại.

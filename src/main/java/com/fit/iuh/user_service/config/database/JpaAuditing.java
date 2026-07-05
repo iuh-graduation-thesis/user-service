@@ -21,7 +21,7 @@ public class JpaAuditing {
 
     private Optional<String> resolveCurrentUserId() {
         Optional<String> fromContext = Optional.ofNullable(UserContextHolder.get())
-                .map(UserContextHolder::getKeycloakId)
+                .map(UserContextHolder::getUserId)
                 .filter(this::hasText);
 
         if (fromContext.isPresent()) {

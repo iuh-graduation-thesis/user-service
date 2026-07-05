@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
+import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
 import com.fit.iuh.user_service.filter.UserContextHolder;
 import com.fit.iuh.user_service.model.User;
@@ -55,8 +56,8 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
-        public UserPermissionsResponse getUserPermissions(String keycloakId) {
-                User user = userRepository.findById(keycloakId)
+        public UserPermissionsResponse getUserPermissions(String userId) {
+                User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
                 var role = user.getRole();
@@ -73,4 +74,9 @@ public class UserServiceImpl implements UserService {
                                 .build();
         }
 
+        @Override
+        public void updateUserPassword(UpdatePasswordRequest request) {
+                String userId = UserContextHolder.get().getUserId();
+                
+        }
 }

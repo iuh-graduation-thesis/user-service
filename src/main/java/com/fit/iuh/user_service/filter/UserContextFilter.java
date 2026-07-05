@@ -26,7 +26,7 @@ public class UserContextFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 
         String email = httpRequest.getHeader("X-User-Email");
-        String userKeycloakId = httpRequest.getHeader("X-User-KeycloakId");
+        String userId = httpRequest.getHeader("X-User-Id");
         String role = httpRequest.getHeader("X-User-Role");
         String authoritiesRaw = httpRequest.getHeader("X-User-Authorities");
 
@@ -55,7 +55,7 @@ public class UserContextFilter implements Filter {
                     .toList();
         }
 
-        if (hasText(email) || hasText(userKeycloakId) || !authorities.isEmpty()) {
+        if (hasText(email) || hasText(userId) || !authorities.isEmpty()) {
             var auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
         } else SecurityContextHolder.clearContext();
@@ -63,13 +63,13 @@ public class UserContextFilter implements Filter {
 
         /*
          * Lưu định danh user vào holder riêng của service.
-         * Các tầng business có thể đọc email/keycloakId hiện tại mà không cần parse lại request header.
+         * Các tầng business có thể đọc email/userId hiện tại mà không cần parse lại request header.
          */
-        if (hasText(email) || hasText(userKeycloakId)) {
+        if (hasText(email) || hasText(userId)) {
             UserContextHolder context = UserContextHolder
                     .builder()
                     .email(email)
-                    .keycloakId(userKeycloakId)
+                    .userId(userId)
                     .build();
 
             UserContextHolder.set(context);

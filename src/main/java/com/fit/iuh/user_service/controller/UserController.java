@@ -1,5 +1,6 @@
 package com.fit.iuh.user_service.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fit.iuh.user_service.dto.base.ApiResponse;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
+import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.service.UserService;
 
 import jakarta.validation.Valid;
@@ -29,5 +31,11 @@ public class UserController {
         return ApiResponse.<Void>builder()
                 .message("Onboarding completed")
                 .build();
+    }
+
+    @PostMapping("/me/password")
+    public ApiResponse<Void> updateUserPassword(@RequestBody @Valid UpdatePasswordRequest request) {
+        userService.updateUserPassword(request);
+        return ApiResponse.<Void>builder().build();
     }
 }
