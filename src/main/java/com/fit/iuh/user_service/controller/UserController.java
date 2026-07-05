@@ -1,5 +1,6 @@
 package com.fit.iuh.user_service.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fit.iuh.user_service.dto.base.ApiResponse;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
+import com.fit.iuh.user_service.dto.request.UpdateProfileRequest;
+import com.fit.iuh.user_service.dto.response.UserProfileResponse;
 import com.fit.iuh.user_service.service.UserService;
 
 import jakarta.validation.Valid;
@@ -27,7 +30,6 @@ public class UserController {
     @PutMapping("/me/onboarding")
     public ApiResponse<Void> onboarding(@RequestBody @Valid OnboardingRequest request) {
         userService.processOnboarding(request);
-
         return ApiResponse.<Void>builder()
                 .message("Onboarding completed")
                 .build();
@@ -38,6 +40,21 @@ public class UserController {
         userService.updateUserPassword(request);
         return ApiResponse.<Void>builder()
                 .message("Password updated successfully")
+                .build();
+    }
+
+    @GetMapping("/me/profile")
+    public ApiResponse<UserProfileResponse> getUserProfile() {
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userService.getUserProfile())
+                .build();
+    }
+
+    @PostMapping("/me/profile")
+    public ApiResponse<Void> updateUserProfile(@RequestBody @Valid UpdateProfileRequest request) {
+        userService.updateUserProfile(request);
+        return ApiResponse.<Void>builder()
+                .message("Profile updated successfully")
                 .build();
     }
 }

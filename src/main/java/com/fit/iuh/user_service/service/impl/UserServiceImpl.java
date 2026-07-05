@@ -10,12 +10,15 @@ import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
+import com.fit.iuh.user_service.dto.request.UpdateProfileRequest;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
-import com.fit.iuh.user_service.filter.UserContextHolder;
+import com.fit.iuh.user_service.dto.response.UserProfileResponse;
+import com.fit.iuh.user_service.mapper.UserMapper;
 import com.fit.iuh.user_service.model.User;
 import com.fit.iuh.user_service.repository.UserRepository;
 import com.fit.iuh.user_service.service.KeycloakUserService;
 import com.fit.iuh.user_service.service.UserService;
+import com.fit.iuh.user_service.utils.CurrentUserUtils;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,24 +34,24 @@ public class UserServiceImpl implements UserService {
 
         UserRepository userRepository;
         KeycloakUserService keycloakUserService;
+        CurrentUserUtils currentUserUtils;
 
         @Override
         public void processOnboarding(OnboardingRequest onboardingRequest) {
-                String email = UserContextHolder.get().getEmail();
-                User user = userRepository
-                                .findByEmail(email)
-                                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                User user = currentUserUtils.getCurrentUser();
 
                 if (Boolean.TRUE.equals(user.getOnBoarded())) {
                         throw new AppException(ErrorCode.USER_ALREADY_ONBOARDED);
                 }
 
-                keycloakUserService.updateNameIfChanged(user.getId(), onboardingRequest);
+                keycloakUserService.updateNameIfChanged(
+                                user.getId(),
+                                onboardingRequest.firstName(),
+                                onboardingRequest.lastName());
 
                 user.setPhone(onboardingRequest.phone());
                 user.setDob(onboardingRequest.dob());
                 user.setGender(onboardingRequest.gender());
-                user.setAvatarUrl(onboardingRequest.avatarUrl());
                 user.setOnBoarded(true);
 
                 userRepository.save(user);
@@ -76,10 +79,40 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public void updateUserPassword(UpdatePasswordRequest request) {
-                String userId = UserContextHolder.get().getUserId();
+                String userId = currentUserUtils.getCurrentUserId();
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
                 keycloakUserService.updatePassword(userId, user.getUsername(), request);
         }
+
+        @Override
+        @Transactional(readOnly = true)
+        public UserProfileResponse getUserProfile() {
+                return UserMapper.mapToUserProfileResponse(currentUserUtils.getCurrentUser());
+        }
+
+        @Override
+        public void updateUserProfile(UpdateProfileRequest request) {
+                User user = currentUserUtils.getCurrentUser();
+
+                keycloakUserService.updateNameIfChanged(
+                                user.getId(),
+                                request.firstName(),
+                                request.lastName());
+
+                if (request.phone() != null) {
+                        user.setPhone(request.phone());
+                }
+                if (request.dob() != null) {
+                        user.setDob(request.dob());
+                }
+                if (request.gender() != null) {
+                        user.setGender(request.gender());
+                }
+
+                userRepository.save(user);
+                log.info("Updated profile for user {}", user.getId());
+        }
+
 }

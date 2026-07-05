@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.config.security.KeycloakPasswordGrantClientFactory;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
-import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.service.KeycloakUserService;
 
@@ -31,18 +30,25 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
     KeycloakPasswordGrantClientFactory keycloakPasswordGrantClientFactory;
 
     @Override
-    public void updateNameIfChanged(String userId, OnboardingRequest onboardingRequest) {
+    public void updateNameIfChanged(String userId, String firstName, String lastName) {
+        if (!hasText(firstName) && !hasText(lastName)) {
+            return;
+        }
+
         try {
             var userResource = keycloakRealm.users().get(userId);
             UserRepresentation userRepresentation = userResource.toRepresentation();
 
-            if (!isNameChanged(userRepresentation, onboardingRequest)) {
+            String resolvedFirstName = hasText(firstName) ? firstName : userRepresentation.getFirstName();
+            String resolvedLastName = hasText(lastName) ? lastName : userRepresentation.getLastName();
+
+            if (!isNameChanged(userRepresentation, resolvedFirstName, resolvedLastName)) {
                 log.info("Keycloak name is unchanged for user {}", userId);
                 return;
             }
 
-            userRepresentation.setFirstName(onboardingRequest.firstName());
-            userRepresentation.setLastName(onboardingRequest.lastName());
+            userRepresentation.setFirstName(resolvedFirstName);
+            userRepresentation.setLastName(resolvedLastName);
 
             userResource.update(userRepresentation);
             log.info("Requested Keycloak name update for user {}", userId);
@@ -82,8 +88,12 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         }
     }
 
-    private boolean isNameChanged(UserRepresentation userRepresentation, OnboardingRequest onboardingRequest) {
-        return !Objects.equals(userRepresentation.getFirstName(), onboardingRequest.firstName())
-                || !Objects.equals(userRepresentation.getLastName(), onboardingRequest.lastName());
+    private boolean isNameChanged(UserRepresentation userRepresentation, String firstName, String lastName) {
+        return !Objects.equals(userRepresentation.getFirstName(), firstName)
+                || !Objects.equals(userRepresentation.getLastName(), lastName);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 }

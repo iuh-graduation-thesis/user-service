@@ -24,8 +24,6 @@ public record OnboardingRequest(
         LocalDate dob,
 
         @NotNull(message = "Giới tính không được để trống")
-        Gender gender,
-
-        String avatarUrl
+        Gender gender
 ) {
 }
