@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.iuh.user_service.advice.base.AppException;
 import com.fit.iuh.user_service.constant.base.ErrorCode;
-import com.fit.iuh.user_service.dto.request.UpdateKeycloakUserRequest;
 import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.request.UpdateAvatarRequest;
+import com.fit.iuh.user_service.dto.request.UpdateKeycloakUserRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.dto.request.UpdateProfileRequest;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
@@ -124,6 +124,25 @@ public class UserServiceImpl implements UserService {
                 log.info("Updated profile for user {}", user.getId());
         }
 
+        @Override
+        public void updateUserAvatar(UpdateAvatarRequest request) {
+                // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void updateUserStatus(String userId, boolean enabled) {
+                userRepository.findById(userId)
+                                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+                keycloakUserService.updateUserIfChanged(
+                                userId,
+                                UpdateKeycloakUserRequest.builder()
+                                                .enabled(enabled)
+                                                .build());
+
+                log.info("Requested user {} status update to enabled={}", userId, enabled);
+        }
+
         private void validateUniqueAccountFields(User user, UpdateProfileRequest request) {
                 if (hasText(request.username())
                                 && !request.username().equals(user.getUsername())
@@ -142,10 +161,4 @@ public class UserServiceImpl implements UserService {
                 return value != null && !value.isBlank();
         }
 
-        @Override
-        public void updateUserAvatar(UpdateAvatarRequest request) {
-                // TODO Auto-generated method stub
-        }
-
-        
 }

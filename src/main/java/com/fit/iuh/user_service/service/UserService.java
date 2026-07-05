@@ -22,4 +22,6 @@ public interface UserService {
     void updateUserProfile(UpdateProfileRequest request);
 
     void updateUserAvatar(UpdateAvatarRequest request);
+
+    void updateUserStatus(String userId, boolean enabled);
 }

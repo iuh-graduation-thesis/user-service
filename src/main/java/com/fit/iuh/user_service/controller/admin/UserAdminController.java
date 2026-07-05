@@ -1,0 +1,42 @@
+package com.fit.iuh.user_service.controller.admin;
+
+import com.fit.iuh.user_service.dto.base.ApiResponse;
+import com.fit.iuh.user_service.service.UserService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequestMapping("/admin/users")
+@PreAuthorize("hasAuthority('ADMIN')")
+public class UserAdminController {
+
+    UserService userService;
+
+    @PatchMapping("/{userId}/disable")
+    public ApiResponse<@NonNull Void> disableUser(@PathVariable String userId) {
+        userService.updateUserStatus(userId, false);
+
+        return ApiResponse.<Void>builder()
+                .message("User disabled successfully")
+                .build();
+    }
+
+    @PatchMapping("/{userId}/enable")
+    public ApiResponse<@NonNull Void> enableUser(@PathVariable String userId) {
+        userService.updateUserStatus(userId, true);
+
+        return ApiResponse.<Void>builder()
+                .message("User enabled successfully")
+                .build();
+    }
+}

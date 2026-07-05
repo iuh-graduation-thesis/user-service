@@ -7,13 +7,15 @@ public record UpdateKeycloakUserRequest(
         String username,
         String email,
         String firstName,
-        String lastName
+        String lastName,
+        Boolean enabled
 ) {
     public boolean hasAnyValue() {
         return hasText(username)
                 || hasText(email)
                 || hasText(firstName)
-                || hasText(lastName);
+                || hasText(lastName)
+                || enabled != null;
     }
 
     private boolean hasText(String value) {

@@ -44,9 +44,16 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             String resolvedEmail = resolveValue(request.email(), userRepresentation.getEmail());
             String resolvedFirstName = resolveValue(request.firstName(), userRepresentation.getFirstName());
             String resolvedLastName = resolveValue(request.lastName(), userRepresentation.getLastName());
+            Boolean resolvedEnabled = request.enabled() != null ? request.enabled() : userRepresentation.isEnabled();
             boolean emailChanged = !Objects.equals(userRepresentation.getEmail(), resolvedEmail);
 
-            if (!isUserChanged(userRepresentation, resolvedUsername, resolvedEmail, resolvedFirstName, resolvedLastName)) {
+            if (!isUserChanged(
+                    userRepresentation,
+                    resolvedUsername,
+                    resolvedEmail,
+                    resolvedFirstName,
+                    resolvedLastName,
+                    resolvedEnabled)) {
                 log.info("Keycloak user information is unchanged for user {}", userId);
                 return;
             }
@@ -55,6 +62,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             userRepresentation.setEmail(resolvedEmail);
             userRepresentation.setFirstName(resolvedFirstName);
             userRepresentation.setLastName(resolvedLastName);
+            userRepresentation.setEnabled(resolvedEnabled);
             if (emailChanged) {
                 userRepresentation.setEmailVerified(false);
             }
@@ -102,12 +110,14 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             String username,
             String email,
             String firstName,
-            String lastName
+            String lastName,
+            Boolean enabled
     ) {
         return !Objects.equals(userRepresentation.getUsername(), username)
                 || !Objects.equals(userRepresentation.getEmail(), email)
                 || !Objects.equals(userRepresentation.getFirstName(), firstName)
-                || !Objects.equals(userRepresentation.getLastName(), lastName);
+                || !Objects.equals(userRepresentation.getLastName(), lastName)
+                || !Objects.equals(userRepresentation.isEnabled(), enabled);
     }
 
     private String resolveValue(String requestValue, String currentValue) {
