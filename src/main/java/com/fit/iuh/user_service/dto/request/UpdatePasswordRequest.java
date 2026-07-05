@@ -5,14 +5,14 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UpdatePasswordRequest(
-        @NotBlank(message = "Mật khẩu cũ không được để trống")
+        @NotBlank(message = "PASSWORD_REQUIRED")
         String oldPassword,
 
-        @NotBlank(message = "Mật khẩu mới không được để trống")
-        @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
+        @NotBlank(message = "NEW_PASSWORD_REQUIRED")
+        @Size(min = 8, message = "PASSWORD_TOO_SHORT")
         @Pattern(
                 regexp = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
-                message = "Mật khẩu phải bao gồm ít nhất 1 chữ hoa, 1 chữ số và 1 ký tự đặc biệt"
+                message = "PASSWORD_WEAK"
         )
         String newPassword
 ) {}

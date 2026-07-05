@@ -77,6 +77,9 @@ public class UserServiceImpl implements UserService {
         @Override
         public void updateUserPassword(UpdatePasswordRequest request) {
                 String userId = UserContextHolder.get().getUserId();
-                
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+                keycloakUserService.updatePassword(userId, user.getUsername(), request);
         }
 }

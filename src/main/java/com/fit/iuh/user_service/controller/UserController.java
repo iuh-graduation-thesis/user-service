@@ -36,6 +36,8 @@ public class UserController {
     @PostMapping("/me/password")
     public ApiResponse<Void> updateUserPassword(@RequestBody @Valid UpdatePasswordRequest request) {
         userService.updateUserPassword(request);
-        return ApiResponse.<Void>builder().build();
+        return ApiResponse.<Void>builder()
+                .message("Password updated successfully")
+                .build();
     }
 }
