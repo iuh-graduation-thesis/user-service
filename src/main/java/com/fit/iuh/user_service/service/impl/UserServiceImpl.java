@@ -1,8 +1,12 @@
 package com.fit.iuh.user_service.service.impl;
 
+import java.util.Objects;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import jakarta.ws.rs.WebApplicationException;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserServiceImpl implements UserService {
 
         UserRepository userRepository;
+        RealmResource keycloakRealm;
 
         @Override
         public void processOnboarding(OnboardingRequest onboardingRequest) {
@@ -36,8 +41,12 @@ public class UserServiceImpl implements UserService {
                                 .findByEmail(email)
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-                user.setFirstName(onboardingRequest.firstName());
-                user.setLastName(onboardingRequest.lastName());
+                if (Boolean.TRUE.equals(user.getOnBoarded())) {
+                        throw new AppException(ErrorCode.USER_ALREADY_ONBOARDED);
+                }
+
+                updateKeycloakNameIfChanged(user.getId(), onboardingRequest);
+
                 user.setPhone(onboardingRequest.phone());
                 user.setDob(onboardingRequest.dob());
                 user.setGender(onboardingRequest.gender());
@@ -65,6 +74,32 @@ public class UserServiceImpl implements UserService {
                                 .role(role != null ? role.getName() : null)
                                 .permissions(permissions)
                                 .build();
+        }
+
+        private void updateKeycloakNameIfChanged(String keycloakId, OnboardingRequest onboardingRequest) {
+                try {
+                        var userResource = keycloakRealm.users().get(keycloakId);
+                        UserRepresentation userRepresentation = userResource.toRepresentation();
+
+                        if (!isNameChanged(userRepresentation, onboardingRequest)) {
+                                log.info("Keycloak name is unchanged for user {}", keycloakId);
+                                return;
+                        }
+
+                        userRepresentation.setFirstName(onboardingRequest.firstName());
+                        userRepresentation.setLastName(onboardingRequest.lastName());
+
+                        userResource.update(userRepresentation);
+                        log.info("Requested Keycloak name update for user {}", keycloakId);
+                } catch (WebApplicationException exception) {
+                        log.error("Failed to update Keycloak user {}: {}", keycloakId, exception.getMessage());
+                        throw new AppException(ErrorCode.KEYCLOAK_USER_UPDATE_FAILED);
+                }
+        }
+
+        private boolean isNameChanged(UserRepresentation userRepresentation, OnboardingRequest onboardingRequest) {
+                return !Objects.equals(userRepresentation.getFirstName(), onboardingRequest.firstName())
+                                || !Objects.equals(userRepresentation.getLastName(), onboardingRequest.lastName());
         }
 
 }

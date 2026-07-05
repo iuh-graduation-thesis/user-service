@@ -18,12 +18,15 @@ public enum ErrorCode {
     // USER
     USER_EXISTED(1004, "User existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
+    USER_ALREADY_ONBOARDED(1006, "User already onboarded", HttpStatus.BAD_REQUEST),
     // ROLE
     ROLE_EXISTED(1101, "Role existed", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXISTED(1102, "Role not existed", HttpStatus.NOT_FOUND),
     // PERMISSION
     PERMISSION_EXISTED(1201, "Permission existed", HttpStatus.BAD_REQUEST),
     PERMISSION_NOT_EXISTED(1202, "Permission not existed", HttpStatus.NOT_FOUND),
+    // KEYCLOAK
+    KEYCLOAK_USER_UPDATE_FAILED(1301, "Keycloak user update failed", HttpStatus.BAD_GATEWAY),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

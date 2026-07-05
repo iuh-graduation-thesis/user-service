@@ -49,6 +49,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     Boolean emailVerified = false;
 
+    @Column(columnDefinition = "TEXT")
     String avatarUrl;
 
     @Column(length = 15)
