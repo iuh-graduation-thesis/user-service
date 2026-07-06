@@ -173,8 +173,7 @@ public class UserServiceImpl implements UserService {
                                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
 
                 if (user.getRole() != null && request.roleId().equals(user.getRole().getId())) {
-                        log.info("User {} already has role {}", user.getId(), role.getId());
-                        return;
+                        throw new AppException(ErrorCode.USER_ALREADY_HAS_ROLE);
                 }
 
                 user.setRole(role);

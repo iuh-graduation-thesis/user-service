@@ -28,6 +28,7 @@ public enum ErrorCode {
     USERNAME_EXISTED(1013, "Username existed", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED(1014, "Email existed", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_VERIFIED(1015, "Email already verified", HttpStatus.BAD_REQUEST),
+    USER_ALREADY_HAS_ROLE(1016, "User already has this role", HttpStatus.BAD_REQUEST),
     // ROLE
     ROLE_EXISTED(1101, "Role existed", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXISTED(1102, "Role not existed", HttpStatus.NOT_FOUND),
