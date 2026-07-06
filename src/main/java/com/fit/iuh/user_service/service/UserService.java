@@ -4,6 +4,7 @@ import com.fit.iuh.user_service.dto.request.OnboardingRequest;
 import com.fit.iuh.user_service.dto.request.UpdateAvatarRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.dto.request.UpdateProfileRequest;
+import com.fit.iuh.user_service.dto.request.UserRoleAssign;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
 import com.fit.iuh.user_service.dto.response.UserProfileResponse;
 
@@ -26,4 +27,6 @@ public interface UserService {
     void updateUserStatus(String userId, boolean enabled);
 
     void verifyCurrentUserEmail();
+
+    void assignRole(UserRoleAssign request);
 }

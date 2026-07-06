@@ -13,10 +13,13 @@ import com.fit.iuh.user_service.dto.request.UpdateAvatarRequest;
 import com.fit.iuh.user_service.dto.request.UpdateKeycloakUserRequest;
 import com.fit.iuh.user_service.dto.request.UpdatePasswordRequest;
 import com.fit.iuh.user_service.dto.request.UpdateProfileRequest;
+import com.fit.iuh.user_service.dto.request.UserRoleAssign;
 import com.fit.iuh.user_service.dto.response.UserPermissionsResponse;
 import com.fit.iuh.user_service.dto.response.UserProfileResponse;
 import com.fit.iuh.user_service.mapper.UserMapper;
+import com.fit.iuh.user_service.model.Role;
 import com.fit.iuh.user_service.model.User;
+import com.fit.iuh.user_service.repository.RoleRepository;
 import com.fit.iuh.user_service.repository.UserRepository;
 import com.fit.iuh.user_service.service.KeycloakUserService;
 import com.fit.iuh.user_service.service.UserService;
@@ -35,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserServiceImpl implements UserService {
 
         UserRepository userRepository;
+        RoleRepository roleRepository;
         KeycloakUserService keycloakUserService;
         CurrentUserUtils currentUserUtils;
 
@@ -158,6 +162,24 @@ public class UserServiceImpl implements UserService {
                                                 .build());
 
                 log.info("Requested email verification for user {}", user.getId());
+        }
+
+        @Override
+        public void assignRole(UserRoleAssign request) {
+                User user = userRepository.findById(request.userId())
+                                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                Role role = roleRepository
+                                .findById(request.roleId())
+                                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+
+                if (user.getRole() != null && request.roleId().equals(user.getRole().getId())) {
+                        log.info("User {} already has role {}", user.getId(), role.getId());
+                        return;
+                }
+
+                user.setRole(role);
+                userRepository.save(user);
+                log.info("Assigned role {} to user {}", role.getId(), user.getId());
         }
 
         private void validateUniqueAccountFields(User user, UpdateProfileRequest request) {
